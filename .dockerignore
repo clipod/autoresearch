@@ -1,0 +1,12 @@
+.venv
+__pycache__
+*.pyc
+.git
+dev/
+results/
+queue/
+worktrees/
+results.tsv
+*.png
+CLAUDE.md
+AGENTS.md
