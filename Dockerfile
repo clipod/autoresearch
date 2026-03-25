@@ -32,4 +32,4 @@ COPY program.md ./
 ENV AUTORESEARCH_CACHE="/root/.cache/autoresearch"
 
 # Default: prepare data then run the before/after comparison
-CMD ["sh", "-c", "uv run prepare.py --num-shards 2 && uv run sample.py"]
+CMD ["sh", "-c", "uv run prepare.py --num-shards 10 && uv run sample.py"]
