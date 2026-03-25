@@ -435,7 +435,7 @@ HEAD_DIM = 128          # target head dimension for attention
 WINDOW_PATTERN = "L"    # sliding window pattern: L=full, S=half context
 
 # Optimization
-TOTAL_BATCH_SIZE = 2**14 # ~16K tokens per optimizer step (reduced for 12GB VRAM)
+TOTAL_BATCH_SIZE = 2**17 # ~131K tokens per optimizer step (tuned for RTX 3060 12GB)
 EMBEDDING_LR = 0.6      # learning rate for token embeddings (Adam)
 UNEMBEDDING_LR = 0.004  # learning rate for lm_head (Adam)
 MATRIX_LR = 0.04        # learning rate for matrix parameters (Muon)
@@ -447,8 +447,8 @@ WARMDOWN_RATIO = 0.5    # fraction of time budget for LR warmdown
 FINAL_LR_FRAC = 0.0     # final LR as fraction of initial
 
 # Model size
-DEPTH = 4               # number of transformer layers (reduced for 12GB VRAM)
-DEVICE_BATCH_SIZE = 8    # per-device batch size (reduced for 12GB VRAM)
+DEPTH = 12              # number of transformer layers (tuned for RTX 3060 12GB)
+DEVICE_BATCH_SIZE = 32   # per-device batch size (tuned for RTX 3060 12GB)
 
 # ---------------------------------------------------------------------------
 # Helpers (importable by other scripts)
