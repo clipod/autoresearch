@@ -28,7 +28,7 @@ import torch
 # ---------------------------------------------------------------------------
 
 MAX_SEQ_LEN = 512        # context length (tuned for RTX 3060 12GB)
-TIME_BUDGET = 1800       # training time budget in seconds (30 minutes)
+TIME_BUDGET = 7200       # training time budget in seconds (2 hours)
 EVAL_TOKENS = 10 * 524288  # number of tokens for val eval (tuned for RTX 3060 12GB)
 
 # ---------------------------------------------------------------------------
