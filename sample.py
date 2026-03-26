@@ -31,8 +31,9 @@ from train import (
 # ---------------------------------------------------------------------------
 
 @torch.no_grad()
-def generate(model, tokenizer, prompt="The", max_new_tokens=100, temperature=0.8, top_k=50):
-    """Generate text token-by-token from the model."""
+def generate(model, tokenizer, prompt="The", max_new_tokens=100,
+             temperature=1.0, top_p=0.9, repetition_penalty=1.3):
+    """Generate text token-by-token with nucleus sampling + repetition penalty."""
     model.eval()
     device = next(model.parameters()).device
 
@@ -45,9 +46,23 @@ def generate(model, tokenizer, prompt="The", max_new_tokens=100, temperature=0.8
             logits = model(input_tokens)
 
         logits = logits[:, -1, :] / temperature
-        if top_k > 0:
-            topk_vals, _ = torch.topk(logits, min(top_k, logits.size(-1)))
-            logits[logits < topk_vals[:, [-1]]] = float('-inf')
+
+        # Repetition penalty: reduce score of tokens already generated
+        for token_id in set(tokens[0].tolist()):
+            if logits[0, token_id] > 0:
+                logits[0, token_id] /= repetition_penalty
+            else:
+                logits[0, token_id] *= repetition_penalty
+
+        # Nucleus (top-p) sampling: only keep tokens whose cumulative prob < top_p
+        sorted_logits, sorted_indices = torch.sort(logits, descending=True)
+        cumulative_probs = torch.cumsum(F.softmax(sorted_logits, dim=-1), dim=-1)
+        # Remove tokens with cumulative probability above the threshold
+        sorted_indices_to_remove = cumulative_probs > top_p
+        # Keep at least one token
+        sorted_indices_to_remove[:, 0] = False
+        indices_to_remove = sorted_indices_to_remove.scatter(1, sorted_indices, sorted_indices_to_remove)
+        logits[indices_to_remove] = float('-inf')
 
         probs = F.softmax(logits, dim=-1)
         next_token = torch.multinomial(probs, num_samples=1)
